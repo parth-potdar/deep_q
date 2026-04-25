@@ -1,0 +1,31 @@
+# Define what build backend to use for this package
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+# Project metadata
+[project]
+name="deep_q"
+version="0.1.0"
+description="Deep Reinforcement Learning experiments, from scratch."
+readme="README.md"
+requires-python=">=3.10"
+
+# Dependencies for package
+dependencies = [
+    "numpy>=2.4",
+    "matplotlib>=3.10", 
+    "torch",
+    "gymnasium"
+]
+
+# You can also define optional dependencies to install using .[""]
+[project.optional-dependencies]
+dev = [ # e.g. dev build "pip install -e '.[dev]'" (-e means editable)
+    "pytest>=7.0" 
+]
+
+# Tell setuptools (python library for packages) where to find things
+[tool.setuptools.packages.find]
+where=["."]
+include=["deep_q*"]
