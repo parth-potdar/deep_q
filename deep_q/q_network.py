@@ -12,6 +12,7 @@ class QNetwork(nn.Module):
         - 2 hidden layers, each of size 64
         - 2 outputs: Q value for each of the possible actions (push cart left, push cart right)
         - ReLU activations
+        - convention: action 0 = left, action 1 = right
         """
         super().__init__()
 
