@@ -1,4 +1,4 @@
-"""Evaluate the trained Q-network"""
+"""Evaluate the trained Q-network for demonstration purposes"""
 
 import torch
 import numpy as np

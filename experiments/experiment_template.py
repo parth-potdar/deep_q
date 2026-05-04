@@ -5,13 +5,15 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
+EXPERIMENT="initial"
+
 env = gym.make("CartPole-v1")
 eval_env = gym.make("CartPole-v1")
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu'
 agent = DQNAgent(env, capacity=10000, learning_rate=1e-3, device=device)
 
-num_episodes = 1000
+num_episodes = 500
 rewards = []
 eval_means = []
 eval_stds = []
@@ -60,7 +62,7 @@ for i in range(num_episodes):
         
         if mean > best_eval_mean:
             best_eval_mean = mean
-            torch.save(agent.q_network.state_dict(), "q_network_best.pth")
+            torch.save(agent.q_network.state_dict(), f"models/{EXPERIMENT}.pth")
 
 # plot rewards and evaluation means and stds
 fig, ax1 = plt.subplots()
@@ -77,3 +79,5 @@ ax2.errorbar(np.arange(0, num_episodes, eval_freq), eval_means
 ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()
+# save figure
+fig.savefig(f"results/{EXPERIMENT}.png")
