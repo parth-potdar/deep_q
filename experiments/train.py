@@ -1,18 +1,28 @@
 from deep_q.agent import DQNAgent
+from deep_q.utils import evaluate
 import gymnasium as gym
 import torch
+import numpy as np
 import matplotlib.pyplot as plt
 
-env = gym.make("CartPole-v1") # render_mode = human -> opens a pygame window
+env = gym.make("CartPole-v1")
+eval_env = gym.make("CartPole-v1")
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu'
-agent = DQNAgent(env, capacity=2500, learning_rate=1e-3, device=device)
+agent = DQNAgent(env, capacity=10000, learning_rate=1e-3, device=device)
 
 num_episodes = 1000
 rewards = []
+eval_means = []
+eval_stds = []
 
 epsilon = 1.0
+decay = 0.99
 state, info = env.reset()
+
+# track best evaluation every 50 episodes
+eval_freq = 50
+best_eval_mean = -np.inf
 
 for i in range(num_episodes):
     print(f"Episode: {i+1}/{num_episodes}")
@@ -31,19 +41,39 @@ for i in range(num_episodes):
         agent.buffer.store(state, action, reward, next_state, done)
 
         # update Q network
-        agent.update(target_freq=1000, batch_size=32)
+        agent.update(target_freq=2000, batch_size=64)
 
         state = next_state
     
     # anneal epsilon every episode
-    epsilon = max(0.01, epsilon * 0.995)
+    epsilon = max(0.01, epsilon * decay)
 
     # save episode reward for plotting
     rewards.append(episode_reward)
 
-    # save model at end of each episode
-    torch.save(agent.q_network.state_dict(), "q_network.pth")
+    if i % eval_freq == 0:
+        mean, std = evaluate(agent, eval_env, 20) # evaluate 20 episodes with greedy policy
+        print(f"Episode {i} | Eval mean: {mean:.1f} | Std: {std:.1f}")
 
-# plot rewards
-plt.plot(rewards)
+        eval_means.append(mean)
+        eval_stds.append(std)
+        
+        if mean > best_eval_mean:
+            best_eval_mean = mean
+            torch.save(agent.q_network.state_dict(), "q_network_best.pth")
+
+# plot rewards and evaluation means and stds
+fig, ax1 = plt.subplots()
+color = 'tab:blue'
+ax1.set_xlabel('Episode')
+ax1.set_ylabel('Reward', color=color)
+ax1.plot(rewards, color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color = 'tab:red'
+ax2.set_ylabel('Eval Mean', color=color)  # we already handled the x-label
+ax2.errorbar(np.arange(0, num_episodes, eval_freq), eval_means
+, yerr=eval_stds, fmt='o', color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()

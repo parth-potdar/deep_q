@@ -41,7 +41,7 @@ class DQNAgent:
 
         return action
 
-    def update(self, target_freq=100, discount=0.99, batch_size=100):
+    def update(self, target_freq=1000, discount=0.99, batch_size=100):
         """
         Apply Q-learning update
         -> Train Q-network from experience batch
