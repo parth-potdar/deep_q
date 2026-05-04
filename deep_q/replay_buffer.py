@@ -7,17 +7,17 @@ class ReplayBuffer:
         Use fixed-size numpy arrays with pointer -> O(1) store method
         (using .pop() would be really slow as python has to move all pointers across)
     """
-    def __init__(self, capacity, state_dim, action_dim):
+    def __init__(self, capacity, state_dim):
         self.capacity = capacity
 
         self.pointer = 0 # track the next write position for new experience
         self.size = 0 # current size of memory
 
         # memory arrays, unpack any tuple inputs using *
-        self.states = np.zeros((self.capacity, *state_dim))
-        self.actions = np.zeros((self.capacity, *action_dim))
-        self.rewards = np.zeros(self.capacity)
-        self.next_states = np.zeros((self.capacity, *state_dim))
+        self.states = np.zeros((self.capacity, *state_dim), dtype=np.float32)
+        self.actions = np.zeros(self.capacity, dtype=np.int_)
+        self.rewards = np.zeros(self.capacity, dtype=np.float32)
+        self.next_states = np.zeros((self.capacity, *state_dim), dtype=np.float32)
         self.dones = np.zeros(self.capacity)
     
     def sample(self, batch_size):
