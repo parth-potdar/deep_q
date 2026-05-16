@@ -65,10 +65,10 @@ class DQNAgent:
         with torch.no_grad():
             # compute TD targets (accounting for terminating episodes)
             targets = rewards + discount * self.target_network(next_states).max(dim=1).values * (1 - dones)
-            
-        # gradient descent on MSE loss
-        loss = torch.nn.functional.mse_loss(q_taken, targets)
 
+        # use Huber loss (smooth_l1_loss) - clipped gradients between -1 and 1
+        loss = torch.nn.functional.smooth_l1_loss(q_taken, targets)
+        
         self.optimiser.zero_grad()
         loss.backward()
         self.optimiser.step()

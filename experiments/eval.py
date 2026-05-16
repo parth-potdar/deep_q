@@ -11,9 +11,10 @@ env = gym.make("CartPole-v1", render_mode="human")
 agent = DQNAgent(env)
 
 # load learned network
-agent.q_network.load_state_dict(torch.load("q_network_best.pth", weights_only=True))
+agent.q_network.load_state_dict(torch.load("models/clipped_error_slower_decay.pth", weights_only=True))
 agent.q_network.eval()
 
 state, info = env.reset()
 
 mean, std = evaluate(agent, env, 1)
+print(mean, std)
