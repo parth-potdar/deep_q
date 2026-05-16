@@ -7,14 +7,14 @@ from deep_q.utils import evaluate
 import gymnasium as gym
 
 # make new env for evaluation
-env = gym.make("CartPole-v1", render_mode="human")
+env = gym.make("CartPole-v1") #render_mode="human")
 agent = DQNAgent(env)
 
 # load learned network
-agent.q_network.load_state_dict(torch.load("models/clipped_error_slower_decay.pth", weights_only=True))
+agent.q_network.load_state_dict(torch.load("models/clipped_error_0997_decay.pth", weights_only=True))
 agent.q_network.eval()
 
 state, info = env.reset()
 
-mean, std = evaluate(agent, env, 1)
+mean, std = evaluate(agent, env, 100)
 print(mean, std)

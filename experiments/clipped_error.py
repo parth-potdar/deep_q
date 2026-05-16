@@ -5,13 +5,12 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
-EXPERIMENT="clipped_error_slower_decay"
-
+EXPERIMENT="clipped_error_25000_capacity"
 env = gym.make("CartPole-v1")
 eval_env = gym.make("CartPole-v1")
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu'
-agent = DQNAgent(env, capacity=10000, learning_rate=1e-4, device=device)
+agent = DQNAgent(env, capacity=25000, learning_rate=1e-4, device=device)
 
 num_episodes = 1000
 rewards = []
@@ -19,7 +18,7 @@ eval_means = []
 eval_stds = []
 
 epsilon = 1.0
-decay = 0.995
+decay = 0.997
 state, info = env.reset()
 
 # track best evaluation every 50 episodes
@@ -41,15 +40,13 @@ for i in range(num_episodes):
 
         # store experience
         agent.buffer.store(state, action, reward, next_state, done)
-
-        # warmup period to ensure enough good samples to learn from
-        if agent.buffer.size < 1000:
-            continue
-
-        # update Q network
-        agent.update(target_freq=500, batch_size=64)
-
+        
+        # update state every time
         state = next_state
+
+        # update Q network after warmup period of 1000 experiences
+        if agent.buffer.size >= 1000:
+            agent.update(target_freq=1000, batch_size=64)
     
     # anneal epsilon every episode
     epsilon = max(0.01, epsilon * decay)
