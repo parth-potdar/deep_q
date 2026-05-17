@@ -1,8 +1,8 @@
 import torch
 import random
 
-from deep_q.q_network import QNetwork
-from deep_q.replay_buffer import ReplayBuffer
+from dqn.q_network import QNetwork
+from dqn.replay_buffer import ReplayBuffer
 
 class DQNAgent:
     def __init__(self, env, capacity=1000, learning_rate=1e-3, device='cpu'):

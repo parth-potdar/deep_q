@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 
 # Project metadata
 [project]
-name="deep_q"
+name="dqn"
 version="0.1.0"
-description="Deep Reinforcement Learning experiments, from scratch."
+description="DQN from scratch"
 readme="README.md"
 requires-python=">=3.10"
 
@@ -28,4 +28,4 @@ dev = [ # e.g. dev build "pip install -e '.[dev]'" (-e means editable)
 # Tell setuptools (python library for packages) where to find things
 [tool.setuptools.packages.find]
 where=["."]
-include=["deep_q*"]
+include=["dqn*"]

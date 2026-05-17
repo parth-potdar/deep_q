@@ -1,5 +1,5 @@
-from deep_q.agent import DQNAgent
-from deep_q.utils import evaluate
+from dqn.agent import DQNAgent
+from dqn.utils import evaluate
 import gymnasium as gym
 import torch
 import numpy as np
